@@ -225,3 +225,8 @@ def menu():
 @app.route("/uploads/<filename>")
 def uploads(filename):
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+
+
+# Получить корзину из сессии
+def get_cart():
+    return session.get("cart", {})
