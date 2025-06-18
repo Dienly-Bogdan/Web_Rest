@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Паста и Пицца</title>
+
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body class="page">
+
+  <!-- Шапка -->
+  <header class="header">
+    <a href="/" class="logo">
+      <img src="{{ url_for('static', filename='uploads/pasta_pizza.png') }}" alt="Логотип Паста и Пицца" class="logo__image" loading="lazy">
+      <h1 class="logo__title">Паста и Пицца</h1>
+    </a>
+    <nav class="nav">
+      <a href="/menu" class="nav__link">Меню</a>
+      {% if session.user_id %}
+        <a href="/cart" class="nav__link">Корзина</a>
+        <a href="/orders" class="nav__link">Заказы</a>
+        <span id="userMenuButton" class="nav__user">
+          {{ session.user_name }}
+          <div id="userDropdown" class="nav__dropdown hidden">
+            <a href="/logout" class="nav__logout">Выйти</a>
+          </div>
+        </span>
+      {% else %}
+        <a href="/login" class="nav__link">Войти</a>
+      {% endif %}
+      {% if session.is_admin %}
+        <a href="/admin/dashboard" class="nav__admin">Админ-панель</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <!-- Контент -->
+  <main class="main">
+    <div class="categories">
+      <a href="/menu" class="category">Все</a>
+      <a href="/menu?category_id=2" class="category">Пицца</a>
+      <a href="/menu?category_id=1" class="category">Паста</a>
+      <a href="/menu?category_id=4" class="category">Салаты</a>
+      <a href="/menu?category_id=3" class="category">Напитки</a>
+      <a href="/menu?category_id=5" class="category">Десерты</a>
+    </div>
+
+    <section class="history">
+      <h2 class="history__title">Наша история</h2>
+      <div class="history__content">
+        <img src="{{ url_for('static', filename='uploads/history.png') }}" alt="История ресторана" class="history__image" loading="lazy">
+        <p class="history__text">
+          Ресторан «Паста и Пицца» родился из мечты двух друзей — шефа-повара Марко и пекаря Антона.
+          Вместе они отправились в гастрономическое путешествие по Италии, чтобы изучить лучшие рецепты традиционной пиццы и пасты.
+          Вернувшись домой, они открыли уютный ресторанчик, где каждый может попробовать настоящую Италию на вкус.
+          Сегодня «Паста и Пицца» — это не просто еда, а место встречи друзей и семьи за горячей, ароматной пиццей и свежей пастой, приготовленной с любовью.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Скрипт -->
+  <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+</body>
+</html>
