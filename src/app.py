@@ -13,3 +13,6 @@ from flask import (
     g                   # Глобальный объект для хранения данных на время запроса
 )
 from werkzeug.utils import secure_filename  # Для защиты имён загружаемых файлов
+
+# Импорт функций для работы с БД из модуля database.py
+from database import get_db, close_db, init_db, query_db, execute_db
