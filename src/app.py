@@ -22,3 +22,10 @@ app = Flask(__name__, template_folder='templates', static_folder='static')
 app.config["SECRET_KEY"] = "pizza17secret"  # Секретный ключ для хранения сессий и защиты от подделки cookie
 app.config["UPLOAD_FOLDER"] = os.path.join("static", "uploads")  # Путь к папке для загрузки файлов
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)  # Создать папку uploads, если её нет
+
+
+
+# Перед каждым запросом подключаемся к базе данных
+@app.before_request
+def before_request():
+    get_db()
