@@ -112,3 +112,13 @@ def get_orders_manage_orders(user_id=None):
         ORDER BY orders.created_at DESC
     """)
     return [dict(row) for row in orders]
+
+
+# Оформить заказ: добавить запись в orders и order_items
+def place_order(user_id, items, address, phone, delivery_time, payment_method):
+    order_id = execute_db(
+        "INSERT INTO orders (user_id, address, phone, status, created_at, payment_method, delivery_time) VALUES (?, ?, ?, ?, datetime('now'), ?, ?)",
+        (user_id, address, phone, "Принят", payment_method, delivery_time))
+    for dish_id, qty in items.items():
+        execute_db("INSERT INTO order_items (order_id, dish_id, qty) VALUES (?, ?, ?)", (order_id, dish_id, qty))
+    return order_id
