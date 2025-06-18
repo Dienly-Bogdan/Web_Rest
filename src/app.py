@@ -230,3 +230,48 @@ def uploads(filename):
 # Получить корзину из сессии
 def get_cart():
     return session.get("cart", {})
+
+
+# Страница заказов пользователя
+@app.route('/orders')
+@login_required
+def orders():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    user_id = session['user_id']
+
+    orders_data = query_db("SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC", (user_id,))
+
+    orders = []
+    for order_row in orders_data:
+        order_id = order_row['id']
+        items_data = query_db("""
+            SELECT dishes.title, dishes.price, order_items.qty
+            FROM order_items 
+            JOIN dishes ON order_items.dish_id = dishes.id
+            WHERE order_items.order_id = ?
+        """, (order_id,))
+
+        items = []
+        total = 0
+        for item in items_data:
+            items.append({
+                'dish_title': item['title'],
+                'price': item['price'],
+                'qty': item['qty']
+            })
+            total += item['price'] * item['qty']
+
+        orders.append({
+            'id': order_id,
+            'address': order_row['address'],
+            'phone': order_row['phone'],
+            'status': order_row['status'],
+            'payment_method': order_row['payment_method'],
+            'delivery_time': order_row['delivery_time'],
+            'created_at': order_row['created_at'],
+            'items': items,
+            'total': total,
+        })
+
+    return render_template('orders.html', orders=orders)
