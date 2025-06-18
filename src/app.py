@@ -58,3 +58,9 @@ def get_dishes(category_id=None):
     else:
         dishes = query_db("SELECT * FROM dishes ORDER BY id DESC")
     return [dict(row) for row in dishes]
+
+
+# Получить одно блюдо по его id
+def get_dish_by_id(dish_id):
+    row = query_db("SELECT * FROM dishes WHERE id=?", (dish_id,), one=True)
+    return dict(row) if row else None
