@@ -122,3 +122,8 @@ def place_order(user_id, items, address, phone, delivery_time, payment_method):
     for dish_id, qty in items.items():
         execute_db("INSERT INTO order_items (order_id, dish_id, qty) VALUES (?, ?, ?)", (order_id, dish_id, qty))
     return order_id
+
+# Добавить отзыв к блюду
+def add_review(user_id, dish_id, rating, text):
+    execute_db("INSERT INTO reviews (user_id, dish_id, rating, text, created_at) VALUES (?, ?, ?, ?, datetime('now'))",
+              (user_id, dish_id, rating, text))
