@@ -315,3 +315,14 @@ def cart():
             })
 
     return render_template("cart.html", cart_items=full_items, total=total_price)
+
+
+# Удалить блюдо из корзины
+@app.route("/cart/remove/<int:dish_id>", methods=["POST"])
+@login_required
+def cart_remove(dish_id):
+    cart = session.get("cart", {})
+    cart.pop(str(dish_id), None)
+    session["cart"] = cart
+    session.modified = True
+    return redirect(url_for("cart"))
