@@ -192,3 +192,10 @@ def login_register_combined():
                 return redirect(url_for("login_register_combined"))
 
     return render_template("login.html")
+
+
+# Выход из аккаунта: очищаем сессию
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("index"))
