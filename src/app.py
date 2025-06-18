@@ -127,3 +127,11 @@ def place_order(user_id, items, address, phone, delivery_time, payment_method):
 def add_review(user_id, dish_id, rating, text):
     execute_db("INSERT INTO reviews (user_id, dish_id, rating, text, created_at) VALUES (?, ?, ?, ?, datetime('now'))",
               (user_id, dish_id, rating, text))
+    
+
+# Получить все отзывы к блюду
+def get_reviews_for_dish(dish_id):
+    reviews = query_db(
+        "SELECT r.rating, r.text, u.name, r.created_at FROM reviews r JOIN users u ON r.user_id = u.id WHERE r.dish_id=? ORDER BY r.created_at DESC",
+        (dish_id,))
+    return [dict(row) for row in reviews]
