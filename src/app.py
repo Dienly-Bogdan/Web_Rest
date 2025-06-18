@@ -43,3 +43,9 @@ def initdb_command():
     """Инициализация базы данных из schema.sql"""
     init_db()
     print("База данных инициализирована.")
+
+
+# Получить список всех категорий из БД
+def get_categories():
+    cats = query_db("SELECT id, name FROM categories ORDER BY name")
+    return [dict(row) for row in cats]
