@@ -10,5 +10,3 @@ function autoRefreshOrders(intervalSeconds = 20) {
         window.location.reload();
     }, intervalSeconds * 1000);
 }
-
-// Подсветка изменившихся заказов 
