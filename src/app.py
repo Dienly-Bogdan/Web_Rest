@@ -49,3 +49,12 @@ def initdb_command():
 def get_categories():
     cats = query_db("SELECT id, name FROM categories ORDER BY name")
     return [dict(row) for row in cats]
+
+
+# Получить список блюд (можно фильтровать по категории)
+def get_dishes(category_id=None):
+    if category_id:
+        dishes = query_db("SELECT * FROM dishes WHERE category_id=? ORDER BY id DESC", (category_id,))
+    else:
+        dishes = query_db("SELECT * FROM dishes ORDER BY id DESC")
+    return [dict(row) for row in dishes]
