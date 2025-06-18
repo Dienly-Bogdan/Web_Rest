@@ -83,3 +83,12 @@ def login_user(email, password):
         return {"id": row["id"], "name": row["name"], "is_admin": bool(row["is_admin"])}
     print("Пользователь не найден или пароль неверный")
     return None
+
+
+# Получить список заказов для пользователя (или всех, если user_id не задан)
+def get_orders(user_id=None):
+    if user_id:
+        orders = query_db("SELECT * FROM orders WHERE user_id=? ORDER BY created_at DESC", (user_id,))
+    else:
+        orders = query_db("SELECT * FROM orders ORDER BY created_at DESC")
+    return [dict(row) for row in orders]
