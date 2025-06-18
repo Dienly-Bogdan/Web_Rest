@@ -389,3 +389,37 @@ def dish_detail(dish_id):
     dish = get_dish_by_id(dish_id)
     reviews = get_reviews_for_dish(dish_id)
     return render_template("dish_detail.html", dish=dish, reviews=reviews)
+
+
+# Оформление заказа через /checkout 
+@app.route("/checkout", methods=["GET", "POST"])
+@login_required
+def checkout():
+    cart = get_cart()
+    if not cart:
+        flash("Корзина пуста!")
+        return redirect(url_for("cart"))
+
+    if request.method == "POST":
+        name = request.form.get("name")
+        phone = request.form.get("phone")
+        address = request.form.get("address")
+        delivery_time = request.form.get("delivery_time")
+        payment_method = request.form.get("payment_method")
+
+        items = {int(k): v for k, v in cart.items()}
+
+        order_id = place_order(
+            session["user_id"],
+            items,
+            address,
+            phone,
+            delivery_time,
+            payment_method
+        )
+
+        session["cart"] = {}
+        flash(f"Заказ оформлен! Номер заказа {order_id}")
+        return redirect(url_for("order_status", order_id=order_id))
+
+    return render_template("checkout.html")
