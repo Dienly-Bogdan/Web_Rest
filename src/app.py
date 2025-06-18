@@ -23,19 +23,15 @@ app.config["SECRET_KEY"] = "pizza17secret"  # Секретный ключ для
 app.config["UPLOAD_FOLDER"] = os.path.join("static", "uploads")  # Путь к папке для загрузки файлов
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)  # Создать папку uploads, если её нет
 
-
-
 # Перед каждым запросом подключаемся к базе данных
 @app.before_request
 def before_request():
     get_db()
 
-
 # После каждого запроса закрываем соединение с БД
 @app.teardown_appcontext
 def teardown_db(exception):
     close_db()
-
 
 # Команда CLI для инициализации базы данных — можно вызвать командой flask init-db
 @app.cli.command("init-db")
@@ -44,12 +40,10 @@ def initdb_command():
     init_db()
     print("База данных инициализирована.")
 
-
 # Получить список всех категорий из БД
 def get_categories():
     cats = query_db("SELECT id, name FROM categories ORDER BY name")
     return [dict(row) for row in cats]
-
 
 # Получить список блюд (можно фильтровать по категории)
 def get_dishes(category_id=None):
@@ -59,12 +53,10 @@ def get_dishes(category_id=None):
         dishes = query_db("SELECT * FROM dishes ORDER BY id DESC")
     return [dict(row) for row in dishes]
 
-
 # Получить одно блюдо по его id
 def get_dish_by_id(dish_id):
     row = query_db("SELECT * FROM dishes WHERE id=?", (dish_id,), one=True)
     return dict(row) if row else None
-
 
 # Зарегистрировать пользователя, если email ещё не занят
 def register_user(email, name, password):
@@ -72,7 +64,6 @@ def register_user(email, name, password):
         return False
     execute_db("INSERT INTO users (email, name, password, is_admin) VALUES (?, ?, ?, 0)", (email, name, password))
     return True
-
 
 # Проверить логин и пароль пользователя
 def login_user(email, password):
@@ -84,7 +75,6 @@ def login_user(email, password):
     print("Пользователь не найден или пароль неверный")
     return None
 
-
 # Получить список заказов для пользователя (или всех, если user_id не задан)
 def get_orders(user_id=None):
     if user_id:
@@ -92,7 +82,6 @@ def get_orders(user_id=None):
     else:
         orders = query_db("SELECT * FROM orders ORDER BY created_at DESC")
     return [dict(row) for row in orders]
-
 
 # Получить заказы с именем пользователя (для админки)
 def get_orders_manage_orders(user_id=None):
@@ -113,7 +102,6 @@ def get_orders_manage_orders(user_id=None):
     """)
     return [dict(row) for row in orders]
 
-
 # Оформить заказ: добавить запись в orders и order_items
 def place_order(user_id, items, address, phone, delivery_time, payment_method):
     order_id = execute_db(
@@ -127,7 +115,6 @@ def place_order(user_id, items, address, phone, delivery_time, payment_method):
 def add_review(user_id, dish_id, rating, text):
     execute_db("INSERT INTO reviews (user_id, dish_id, rating, text, created_at) VALUES (?, ?, ?, ?, datetime('now'))",
               (user_id, dish_id, rating, text))
-    
 
 # Получить все отзывы к блюду
 def get_reviews_for_dish(dish_id):
@@ -135,7 +122,6 @@ def get_reviews_for_dish(dish_id):
         "SELECT r.rating, r.text, u.name, r.created_at FROM reviews r JOIN users u ON r.user_id = u.id WHERE r.dish_id=? ORDER BY r.created_at DESC",
         (dish_id,))
     return [dict(row) for row in reviews]
-
 
 # Декоратор: требовать логин пользователя для доступа
 def login_required(f):
@@ -146,7 +132,6 @@ def login_required(f):
     wrap.__name__ = f.__name__
     return wrap
 
-
 # Декоратор: требовать права админа для доступа
 def admin_required(f):
     def wrap(*args, **kwargs):
@@ -156,7 +141,6 @@ def admin_required(f):
         return f(*args, **kwargs)
     wrap.__name__ = f.__name__
     return wrap
-
 
 # ---------------------- МАРШРУТЫ ПОЛЬЗОВАТЕЛЯ ----------------------
 
@@ -193,13 +177,11 @@ def login_register_combined():
 
     return render_template("login.html")
 
-
 # Выход из аккаунта: очищаем сессию
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("index"))
-
 
 # Главная страница: категории и блюда
 @app.route("/")
@@ -207,7 +189,6 @@ def index():
     categories = get_categories()
     dishes = get_dishes()
     return render_template("index.html", categories=categories, dishes=dishes)
-
 
 # Меню: блюда по категориям
 @app.route("/menu")
@@ -220,17 +201,14 @@ def menu():
     categories = get_categories()
     return render_template("menu.html", dishes=dishes, categories=categories)
 
-
 # Выдача загруженных файлов (например, изображений)
 @app.route("/uploads/<filename>")
 def uploads(filename):
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
-
 # Получить корзину из сессии
 def get_cart():
     return session.get("cart", {})
-
 
 # Страница заказов пользователя
 @app.route('/orders')
@@ -276,7 +254,6 @@ def orders():
 
     return render_template('orders.html', orders=orders)
 
-
 # ---------------------- КОРЗИНА ----------------------
 
 # Добавить блюдо в корзину, показать содержимое корзины
@@ -316,7 +293,6 @@ def cart():
 
     return render_template("cart.html", cart_items=full_items, total=total_price)
 
-
 # Удалить блюдо из корзины
 @app.route("/cart/remove/<int:dish_id>", methods=["POST"])
 @login_required
@@ -326,7 +302,6 @@ def cart_remove(dish_id):
     session["cart"] = cart
     session.modified = True
     return redirect(url_for("cart"))
-
 
 # Изменить количество блюда в корзине
 @app.route("/cart/update/<int:dish_id>", methods=["POST"])
@@ -340,7 +315,6 @@ def cart_update_quantity(dish_id):
     session["cart"] = cart
     session.modified = True
     return '', 204  # пустой успешный ответ
-
 
 # ---------------------- ОФОРМЛЕНИЕ ЗАКАЗА ----------------------
 
@@ -371,7 +345,6 @@ def order_status(order_id):
 
     return render_template("order_status.html", order=order, items=items)
 
-
 # Добавление отзыва к блюду
 @app.route("/review/<int:dish_id>", methods=["POST"])
 @login_required
@@ -382,14 +355,12 @@ def add_review_route(dish_id):
     flash("Спасибо за отзыв!")
     return redirect(url_for("dish_detail", dish_id=dish_id))
 
-
 # Детальная страница блюда с отзывами
 @app.route("/dish/<int:dish_id>")
 def dish_detail(dish_id):
     dish = get_dish_by_id(dish_id)
     reviews = get_reviews_for_dish(dish_id)
     return render_template("dish_detail.html", dish=dish, reviews=reviews)
-
 
 # Оформление заказа через /checkout 
 @app.route("/checkout", methods=["GET", "POST"])
@@ -423,7 +394,6 @@ def checkout():
         return redirect(url_for("order_status", order_id=order_id))
 
     return render_template("checkout.html")
-
 
 # ---------------------- АДМИНКА ----------------------
 
@@ -472,7 +442,6 @@ def dashboard():
 
     return render_template('admin/dashboard.html', categories=categories, orders=orders)
 
-
 # Управление блюдами (админка)
 @app.route('/admin/manage_menu')
 @admin_required
@@ -480,7 +449,6 @@ def admin_manage_menu():
     dishes = get_dishes()
     categories = get_categories()
     return render_template('admin/manage_menu.html', dishes=dishes, categories=categories)
-
 
 # Добавление блюда (админка)
 @app.route('/admin/add_dish', methods=['GET', 'POST'])
@@ -561,7 +529,6 @@ def admin_edit_dish(dish_id):
         return redirect(url_for('admin_manage_menu'))
     return render_template('admin/edit_dish.html', dish=dish, categories=categories)
 
-
 # Удаление блюда (админка)
 @app.route('/admin/delete_dish/<int:dish_id>', methods=['POST'])
 @admin_required
@@ -569,14 +536,12 @@ def admin_delete_dish(dish_id):
     execute_db("DELETE FROM dishes WHERE id=?", (dish_id,))
     return redirect(url_for('admin_manage_menu'))
 
-
 # Управление заказами (админка)
 @app.route('/admin/manage_orders')
 @admin_required
 def admin_manage_orders():
     orders = get_orders_manage_orders()  # Должен возвращать и user_name!
     return render_template('admin/manage_orders.html', orders=orders)
-
 
 # Смена статуса заказа (админка)
 @app.route('/admin/order_status/<int:order_id>', methods=['POST'])
@@ -586,14 +551,12 @@ def admin_order_status(order_id):
     execute_db("UPDATE orders SET status=? WHERE id=?", (new_status, order_id))
     return redirect(url_for('admin_manage_orders'))
 
-
 # Управление категориями (админка)
 @app.route('/admin/manage_categories')
 @admin_required
 def admin_manage_categories():
     categories = get_categories()
     return render_template('admin/manage_categories.html', categories=categories)
-
 
 # Добавить категорию (админка)
 @app.route('/admin/add_category', methods=['POST'])
@@ -604,14 +567,12 @@ def admin_add_category():
         execute_db("INSERT INTO categories (name) VALUES (?)", (name,))
     return redirect(url_for('admin_manage_categories'))
 
-
 # Удалить категорию (админка)
 @app.route('/admin/delete_category/<int:cat_id>', methods=['POST'])
 @admin_required
 def admin_delete_category(cat_id):
     execute_db("DELETE FROM categories WHERE id=?", (cat_id,))
     return redirect(url_for('admin_manage_categories'))
-
 
 # Запуск приложения (если запущен этот файл напрямую)
 if __name__ == "__main__":
