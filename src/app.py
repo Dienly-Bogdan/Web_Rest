@@ -381,3 +381,11 @@ def add_review_route(dish_id):
     add_review(session["user_id"], dish_id, rating, text)
     flash("Спасибо за отзыв!")
     return redirect(url_for("dish_detail", dish_id=dish_id))
+
+
+# Детальная страница блюда с отзывами
+@app.route("/dish/<int:dish_id>")
+def dish_detail(dish_id):
+    dish = get_dish_by_id(dish_id)
+    reviews = get_reviews_for_dish(dish_id)
+    return render_template("dish_detail.html", dish=dish, reviews=reviews)
