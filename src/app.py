@@ -471,3 +471,12 @@ def dashboard():
     conn.close()
 
     return render_template('admin/dashboard.html', categories=categories, orders=orders)
+
+
+# Управление блюдами (админка)
+@app.route('/admin/manage_menu')
+@admin_required
+def admin_manage_menu():
+    dishes = get_dishes()
+    categories = get_categories()
+    return render_template('admin/manage_menu.html', dishes=dishes, categories=categories)
