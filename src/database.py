@@ -14,7 +14,7 @@ DB_PATH = os.path.join(BASE_DIR, "pasta_pizza.db")
 def get_db():
     if 'db' not in g:
         conn = sqlite3.connect(DB_PATH)
-        conn.row_factory = sqlite3.Row  # Результаты возвращаются в виде словарей
+        conn.row_factory = sqlite3.Row
         g.db = conn
     return g.db
 
@@ -39,6 +39,7 @@ def init_db():
 # Возвращает все найденные записи или одну запись, если one=True
 
 def query_db(query, args=(), one=False):
+    
     cur = get_db().execute(query, args)
     rv = cur.fetchall()
     cur.close()
