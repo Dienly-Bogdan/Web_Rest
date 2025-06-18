@@ -35,3 +35,11 @@ def before_request():
 @app.teardown_appcontext
 def teardown_db(exception):
     close_db()
+
+
+# Команда CLI для инициализации базы данных — можно вызвать командой flask init-db
+@app.cli.command("init-db")
+def initdb_command():
+    """Инициализация базы данных из schema.sql"""
+    init_db()
+    print("База данных инициализирована.")
