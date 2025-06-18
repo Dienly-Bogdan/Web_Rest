@@ -560,3 +560,11 @@ def admin_edit_dish(dish_id):
                   (title, description, price, category_id, image_filename, is_veg, is_spicy, dish_id))
         return redirect(url_for('admin_manage_menu'))
     return render_template('admin/edit_dish.html', dish=dish, categories=categories)
+
+
+# Удаление блюда (админка)
+@app.route('/admin/delete_dish/<int:dish_id>', methods=['POST'])
+@admin_required
+def admin_delete_dish(dish_id):
+    execute_db("DELETE FROM dishes WHERE id=?", (dish_id,))
+    return redirect(url_for('admin_manage_menu'))
