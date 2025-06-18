@@ -576,3 +576,12 @@ def admin_delete_dish(dish_id):
 def admin_manage_orders():
     orders = get_orders_manage_orders()  # Должен возвращать и user_name!
     return render_template('admin/manage_orders.html', orders=orders)
+
+
+# Смена статуса заказа (админка)
+@app.route('/admin/order_status/<int:order_id>', methods=['POST'])
+@admin_required
+def admin_order_status(order_id):
+    new_status = request.form.get("status")
+    execute_db("UPDATE orders SET status=? WHERE id=?", (new_status, order_id))
+    return redirect(url_for('admin_manage_orders'))
