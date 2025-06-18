@@ -275,3 +275,43 @@ def orders():
         })
 
     return render_template('orders.html', orders=orders)
+
+
+# ---------------------- КОРЗИНА ----------------------
+
+# Добавить блюдо в корзину, показать содержимое корзины
+@app.route("/cart", methods=["GET", "POST"])
+@login_required
+def cart():
+    if request.method == "POST":
+        # Добавление в корзину
+        dish_id = request.form.get("dish_id")
+        qty = int(request.form.get("qty", 1))
+        cart = session.get("cart", {})
+        cart[dish_id] = cart.get(dish_id, 0) + qty
+        session["cart"] = cart
+        session.modified = True
+        return '', 204
+
+    # Получаем корзину из сессии
+    cart = get_cart()
+
+    # Получаем блюда из базы
+    full_items = []
+    total_price = 0
+
+    for dish_id_str, qty in cart.items():
+        dish = get_dish_by_id(int(dish_id_str))
+        if dish:
+            subtotal = dish["price"] * qty
+            total_price += subtotal
+            full_items.append({
+                "id": dish["id"],
+                "title": dish["title"],
+                "price": dish["price"],
+                "image": dish["image"],
+                "quantity": qty,
+                "subtotal": subtotal
+            })
+
+    return render_template("cart.html", cart_items=full_items, total=total_price)
