@@ -370,3 +370,14 @@ def order_status(order_id):
     ).fetchall()
 
     return render_template("order_status.html", order=order, items=items)
+
+
+# Добавление отзыва к блюду
+@app.route("/review/<int:dish_id>", methods=["POST"])
+@login_required
+def add_review_route(dish_id):
+    rating = int(request.form.get("rating", 5))
+    text = request.form.get("text", "")
+    add_review(session["user_id"], dish_id, rating, text)
+    flash("Спасибо за отзыв!")
+    return redirect(url_for("dish_detail", dish_id=dish_id))
