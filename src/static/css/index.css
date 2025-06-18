@@ -1,0 +1,145 @@
+/* Общие стили */
+body.page {
+  background-color: #f9fafb; /* Gray-50 из Tailwind */
+  font-family: system-ui, sans-serif;
+}
+
+/* Шапка */
+.header {
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo__image {
+  height: 40px;
+  width: 40px;
+  border-radius: 9999px;
+}
+
+.logo__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav__link {
+  color: #2563eb; /* blue-600 */
+  text-decoration: none;
+}
+
+.nav__link:hover {
+  text-decoration: underline;
+}
+
+.nav__user {
+  color: #374151; /* gray-700 */
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.nav__dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  border: 1px solid #e5e7eb; /* gray-200 */
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 0.5rem;
+  z-index: 10;
+}
+
+.nav__logout {
+  display: block;
+  color: #dc2626; /* red-600 */
+  text-decoration: none;
+}
+
+.nav__logout:hover {
+  text-decoration: underline;
+}
+
+.nav__admin {
+  color: #7c3aed; /* purple-600 */
+  text-decoration: none;
+}
+
+.nav__admin:hover {
+  text-decoration: underline;
+}
+
+/* Категории */
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.category {
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  background: #fef2f2; /* red-100 */
+  text-decoration: none;
+}
+
+.category:hover {
+  background: #fecaca; /* red-200 */
+}
+
+/* История */
+.history {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  font-family: 'Dancing Script', cursive;
+}
+
+.history__title {
+  font-size: 1.875rem; /* text-3xl */
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.history__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .history__content {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.history__image {
+  width: 100%;
+  max-width: 50%;
+  border-radius: 0.5rem;
+}
+
+.history__text {
+  color: #374151; /* gray-700 */
+  font-size: 1.125rem; /* text-lg */
+  line-height: 1.75rem; /* leading-relaxed */
+}
+
