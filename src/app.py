@@ -423,3 +423,51 @@ def checkout():
         return redirect(url_for("order_status", order_id=order_id))
 
     return render_template("checkout.html")
+
+
+# ---------------------- АДМИНКА ----------------------
+
+# Админ-панель: просмотр заказов и добавление блюда
+@app.route('/admin/dashboard', methods=['GET', 'POST'])
+@admin_required
+def dashboard():
+    conn = get_db()
+    cur = conn.cursor()
+
+    if request.method == 'POST':
+        title = request.form.get('title')
+        description = request.form.get('description')
+        price = request.form.get('price')
+        category_id = request.form.get('category')
+        image = ''  # Пока без загрузки файла, можно добавить потом
+
+        if not (title and description and price and category_id):
+            flash("Заполните все поля!", "error")
+        else:
+            cur.execute("""
+                INSERT INTO dishes (title, description, price, category_id, image)
+                VALUES (?, ?, ?, ?, ?)
+            """, (title, description, float(price), int(category_id), image))
+            conn.commit()
+            flash("Блюдо добавлено!", "success")
+            return redirect(url_for('dashboard'))
+
+    cur.execute("SELECT id, name FROM categories")
+    categories = cur.fetchall()
+
+    cur.execute("""
+        SELECT o.id, u.name, o.address, o.phone, o.status,
+               GROUP_CONCAT(d.title || ' (x' || oi.qty || ')', ', ') AS items
+        FROM orders o
+        JOIN users u ON o.user_id = u.id
+        JOIN order_items oi ON oi.order_id = o.id
+        JOIN dishes d ON oi.dish_id = d.id
+        WHERE o.status != 'Доставлен'
+        GROUP BY o.id
+        ORDER BY o.created_at DESC
+    """)
+    orders = cur.fetchall()
+
+    conn.close()
+
+    return render_template('admin/dashboard.html', categories=categories, orders=orders)
