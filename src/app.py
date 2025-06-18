@@ -145,3 +145,14 @@ def login_required(f):
         return f(*args, **kwargs)
     wrap.__name__ = f.__name__
     return wrap
+
+
+# Декоратор: требовать права админа для доступа
+def admin_required(f):
+    def wrap(*args, **kwargs):
+        if not session.get("is_admin"):
+            flash("Только для админа!")
+            return redirect(url_for('login_register_combined'))
+        return f(*args, **kwargs)
+    wrap.__name__ = f.__name__
+    return wrap
