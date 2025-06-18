@@ -64,3 +64,11 @@ def get_dishes(category_id=None):
 def get_dish_by_id(dish_id):
     row = query_db("SELECT * FROM dishes WHERE id=?", (dish_id,), one=True)
     return dict(row) if row else None
+
+
+# Зарегистрировать пользователя, если email ещё не занят
+def register_user(email, name, password):
+    if query_db("SELECT id FROM users WHERE email=?", (email,), one=True):
+        return False
+    execute_db("INSERT INTO users (email, name, password, is_admin) VALUES (?, ?, ?, 0)", (email, name, password))
+    return True
