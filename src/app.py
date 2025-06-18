@@ -593,3 +593,13 @@ def admin_order_status(order_id):
 def admin_manage_categories():
     categories = get_categories()
     return render_template('admin/manage_categories.html', categories=categories)
+
+
+# Добавить категорию (админка)
+@app.route('/admin/add_category', methods=['POST'])
+@admin_required
+def admin_add_category():
+    name = request.form.get("name")
+    if name:
+        execute_db("INSERT INTO categories (name) VALUES (?)", (name,))
+    return redirect(url_for('admin_manage_categories'))
