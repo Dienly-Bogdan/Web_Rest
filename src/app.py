@@ -156,3 +156,39 @@ def admin_required(f):
         return f(*args, **kwargs)
     wrap.__name__ = f.__name__
     return wrap
+
+
+# ---------------------- МАРШРУТЫ ПОЛЬЗОВАТЕЛЯ ----------------------
+
+# Логин и регистрация (одна форма)
+@app.route("/login", methods=["GET", "POST"])
+def login_register_combined():
+    if request.method == "POST":
+        action = request.form.get("form_type")  # login или register
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        if action == "login":
+            user = login_user(email, password)
+            if user:
+                session["user_id"] = user["id"]
+                session["user_name"] = user["name"]
+                session["is_admin"] = user["is_admin"]
+                return redirect(url_for("index"))
+            else:
+                flash("Неверная почта или пароль!")
+                return redirect(url_for("login_register_combined"))
+
+        elif action == "register":
+            name = request.form.get("name")
+            if not (email and name and password):
+                flash("Заполните все поля для регистрации!")
+                return redirect(url_for("login_register_combined"))
+            elif register_user(email, name, password):
+                flash("Регистрация успешна, войдите!")
+                return redirect(url_for("login_register_combined"))
+            else:
+                flash("Пользователь с такой почтой уже есть!")
+                return redirect(url_for("login_register_combined"))
+
+    return render_template("login.html")
