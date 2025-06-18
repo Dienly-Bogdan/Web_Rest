@@ -16,3 +16,9 @@ from werkzeug.utils import secure_filename  # Для защиты имён за�
 
 # Импорт функций для работы с БД из модуля database.py
 from database import get_db, close_db, init_db, query_db, execute_db
+
+# Создание экземпляра Flask-приложения, указываем папки для шаблонов и статики
+app = Flask(__name__, template_folder='templates', static_folder='static')
+app.config["SECRET_KEY"] = "pizza17secret"  # Секретный ключ для хранения сессий и защиты от подделки cookie
+app.config["UPLOAD_FOLDER"] = os.path.join("static", "uploads")  # Путь к папке для загрузки файлов
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)  # Создать папку uploads, если её нет
