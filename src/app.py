@@ -326,3 +326,17 @@ def cart_remove(dish_id):
     session["cart"] = cart
     session.modified = True
     return redirect(url_for("cart"))
+
+
+# Изменить количество блюда в корзине
+@app.route("/cart/update/<int:dish_id>", methods=["POST"])
+@login_required
+def cart_update_quantity(dish_id):
+    qty = request.form.get("quantity", type=int)
+    if not qty or qty < 1:
+        qty = 1
+    cart = session.get("cart", {})
+    cart[str(dish_id)] = qty
+    session["cart"] = cart
+    session.modified = True
+    return '', 204  # пустой успешный ответ
