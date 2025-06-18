@@ -199,3 +199,11 @@ def login_register_combined():
 def logout():
     session.clear()
     return redirect(url_for("index"))
+
+
+# Главная страница: категории и блюда
+@app.route("/")
+def index():
+    categories = get_categories()
+    dishes = get_dishes()
+    return render_template("index.html", categories=categories, dishes=dishes)
