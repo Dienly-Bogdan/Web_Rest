@@ -135,3 +135,13 @@ def get_reviews_for_dish(dish_id):
         "SELECT r.rating, r.text, u.name, r.created_at FROM reviews r JOIN users u ON r.user_id = u.id WHERE r.dish_id=? ORDER BY r.created_at DESC",
         (dish_id,))
     return [dict(row) for row in reviews]
+
+
+# Декоратор: требовать логин пользователя для доступа
+def login_required(f):
+    def wrap(*args, **kwargs):
+        if not session.get("user_id"):
+            return redirect(url_for('login_register_combined'))
+        return f(*args, **kwargs)
+    wrap.__name__ = f.__name__
+    return wrap
