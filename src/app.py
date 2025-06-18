@@ -29,3 +29,9 @@ os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)  # Создать пап
 @app.before_request
 def before_request():
     get_db()
+
+
+# После каждого запроса закрываем соединение с БД
+@app.teardown_appcontext
+def teardown_db(exception):
+    close_db()
