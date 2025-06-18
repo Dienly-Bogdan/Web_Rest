@@ -611,3 +611,8 @@ def admin_add_category():
 def admin_delete_category(cat_id):
     execute_db("DELETE FROM categories WHERE id=?", (cat_id,))
     return redirect(url_for('admin_manage_categories'))
+
+
+# Запуск приложения (если запущен этот файл напрямую)
+if __name__ == "__main__":
+    app.run(debug=True, port=8088)
