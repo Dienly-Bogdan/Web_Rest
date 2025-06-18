@@ -603,3 +603,11 @@ def admin_add_category():
     if name:
         execute_db("INSERT INTO categories (name) VALUES (?)", (name,))
     return redirect(url_for('admin_manage_categories'))
+
+
+# Удалить категорию (админка)
+@app.route('/admin/delete_category/<int:cat_id>', methods=['POST'])
+@admin_required
+def admin_delete_category(cat_id):
+    execute_db("DELETE FROM categories WHERE id=?", (cat_id,))
+    return redirect(url_for('admin_manage_categories'))
