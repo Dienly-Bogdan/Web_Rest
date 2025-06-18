@@ -219,3 +219,9 @@ def menu():
         dishes = get_dishes()
     categories = get_categories()
     return render_template("menu.html", dishes=dishes, categories=categories)
+
+
+# Выдача загруженных файлов (например, изображений)
+@app.route("/uploads/<filename>")
+def uploads(filename):
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
