@@ -568,3 +568,11 @@ def admin_edit_dish(dish_id):
 def admin_delete_dish(dish_id):
     execute_db("DELETE FROM dishes WHERE id=?", (dish_id,))
     return redirect(url_for('admin_manage_menu'))
+
+
+# Управление заказами (админка)
+@app.route('/admin/manage_orders')
+@admin_required
+def admin_manage_orders():
+    orders = get_orders_manage_orders()  # Должен возвращать и user_name!
+    return render_template('admin/manage_orders.html', orders=orders)
