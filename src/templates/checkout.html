@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Оформление заказа - Паста и Пицца</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.css') }}">
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- Шапка -->
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <a href="/" class="flex items-center space-x-2">
+      <img src="{{ url_for('static', filename='uploads/pasta_pizza.png') }}" alt="Логотип Паста и Пицца" class="h-10 w-10 rounded-full" loading="lazy" />
+      <h1 class="text-xl font-bold">Паста и Пицца</h1>
+    </a>
+    <nav>
+      <a href="/menu" class="mx-2 text-blue-600 hover:underline">Меню</a>
+      
+      {% if session.user_id %}
+        <a href="/cart" id="cartLink" class="mx-2 text-blue-600 hover:underline">Корзина</a>
+        <a href="/orders" class="mx-2 text-blue-600 hover:underline">Заказы</a>
+      {% endif %}
+
+      {% if session.user_id %}
+        <span id="userMenuButton" class="mx-2 text-gray-700 cursor-pointer relative select-none">
+          {{ session.user_name }}
+          <div id="userDropdown" class="hidden absolute top-full right-0 bg-white border rounded shadow p-2 z-10">
+            <a href="/logout" class="block text-red-600 hover:underline">Выйти</a>
+          </div>
+        </span>
+      {% else %}
+        <a href="/login" class="mx-2 text-blue-600 hover:underline">Войти</a>
+      {% endif %}
+
+      {% if session.is_admin %}
+        <a href="/admin/dashboard" class="mx-2 text-purple-600 hover:underline">Админ-панель</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <script>
+    const btn = document.getElementById('userMenuButton');
+    const dropdown = document.getElementById('userDropdown');
+
+    if (btn && dropdown) {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        dropdown.classList.toggle('hidden');
+      });
+
+      window.addEventListener('click', () => {
+        if (!dropdown.classList.contains('hidden')) {
+          dropdown.classList.add('hidden');
+        }
+      });
+    }
+  </script>
+
+  <!-- Контент страницы оформления заказа -->
+  <main class="p-4 max-w-2xl mx-auto mt-10 bg-white rounded-lg shadow-md">
+    <h2 class="text-3xl font-semibold mb-6 text-gray-800">Оформление заказа</h2>
+    
+    <form method="POST" class="space-y-5">
+      <!-- Имя -->
+      <div>
+        <label for="name" class="block mb-1 font-medium text-gray-700">Имя</label>
+        <input id="name" name="name" type="text" required
+          class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+
+      <!-- Адрес -->
+      <div>
+        <label for="address" class="block mb-1 font-medium text-gray-700">Адрес доставки</label>
+        <textarea id="address" name="address" rows="3" required
+          class="w-full border border-gray-300 rounded-md px-4 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+      </div>
+
+      <!-- Телефон -->
+      <div>
+        <label for="phone" class="block mb-1 font-medium text-gray-700">Телефон</label>
+        <input id="phone" name="phone" type="tel" required
+          pattern="^\+?[0-9\s\-\(\)]{7,20}$"
+          placeholder="+7 900 123 45 67"
+          class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+
+      <!-- Комментарий -->
+      <div>
+        <label for="comment" class="block mb-1 font-medium text-gray-700">Комментарий к заказу</label>
+        <textarea id="comment" name="comment" rows="3"
+          class="w-full border border-gray-300 rounded-md px-4 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+      </div>
+
+      <!-- Кнопка отправки -->
+      <button type="submit"
+        class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition">
+        Подтвердить заказ
+      </button>
+    </form>
+  </main>
+
+</body>
+</html>
