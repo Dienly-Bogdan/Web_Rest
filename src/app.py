@@ -72,3 +72,14 @@ def register_user(email, name, password):
         return False
     execute_db("INSERT INTO users (email, name, password, is_admin) VALUES (?, ?, ?, 0)", (email, name, password))
     return True
+
+
+# Проверить логин и пароль пользователя
+def login_user(email, password):
+    print(f"Попытка входа: email={email}, password={password}")
+    row = query_db("SELECT id, name, is_admin FROM users WHERE email=? AND password=?", (email, password), one=True)
+    if row:
+        print(f"Пользователь найден: {row['name']}")
+        return {"id": row["id"], "name": row["name"], "is_admin": bool(row["is_admin"])}
+    print("Пользователь не найден или пароль неверный")
+    return None
