@@ -92,3 +92,23 @@ def get_orders(user_id=None):
     else:
         orders = query_db("SELECT * FROM orders ORDER BY created_at DESC")
     return [dict(row) for row in orders]
+
+
+# Получить заказы с именем пользователя (для админки)
+def get_orders_manage_orders(user_id=None):
+    if user_id:
+        orders = query_db("""
+        SELECT orders.*, users.name AS user_name
+        FROM orders
+        JOIN users ON orders.user_id = users.id
+        WHERE user_id=?
+        ORDER BY orders.created_at DESC
+    """, (user_id,))
+    else:
+        orders = query_db("""
+        SELECT orders.*, users.name AS user_name
+        FROM orders
+        JOIN users ON orders.user_id = users.id
+        ORDER BY orders.created_at DESC
+    """)
+    return [dict(row) for row in orders]
