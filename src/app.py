@@ -207,3 +207,15 @@ def index():
     categories = get_categories()
     dishes = get_dishes()
     return render_template("index.html", categories=categories, dishes=dishes)
+
+
+# Меню: блюда по категориям
+@app.route("/menu")
+def menu():
+    category_id = request.args.get("category_id")
+    if category_id:
+        dishes = get_dishes(category_id=int(category_id))
+    else:
+        dishes = get_dishes()
+    categories = get_categories()
+    return render_template("menu.html", dishes=dishes, categories=categories)
