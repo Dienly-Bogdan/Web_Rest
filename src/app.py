@@ -480,3 +480,54 @@ def admin_manage_menu():
     dishes = get_dishes()
     categories = get_categories()
     return render_template('admin/manage_menu.html', dishes=dishes, categories=categories)
+
+
+# Добавление блюда (админка)
+@app.route('/admin/add_dish', methods=['GET', 'POST'])
+@admin_required
+def admin_add_dish():
+    categories = get_categories()
+    if not categories:
+        flash("Сначала создайте хотя бы одну категорию!")
+        return redirect(url_for("admin_manage_categories"))
+
+    if request.method == "POST":
+        title = request.form.get('title', '').strip()
+        description = request.form.get('description', '').strip()
+        price_raw = request.form.get('price', '').strip()
+        category_id_raw = request.form.get('category', '').strip()
+        image = request.files.get('image')
+
+        # Валидация
+        if not title or not description or not price_raw or not category_id_raw:
+            flash("Пожалуйста, заполните все обязательные поля!")
+            return redirect(request.url)
+        try:
+            price = float(price_raw)
+        except ValueError:
+            flash("Цена должна быть числом!")
+            return redirect(request.url)
+        try:
+            category_id = int(category_id_raw)
+        except ValueError:
+            flash("Выберите корректную категорию!")
+            return redirect(request.url)
+
+        image_filename = None
+        if image and image.filename:
+            image_filename = secure_filename(image.filename)
+            image.save(os.path.join(app.config["UPLOAD_FOLDER"], image_filename))
+
+        # Флаги блюда — опционально
+        is_veg = int(request.form.get('is_veg', 0))
+        is_spicy = int(request.form.get('is_spicy', 0))
+
+        execute_db(
+            "INSERT INTO dishes (title, description, price, category_id, image, is_veg, is_spicy) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (title, description, price, category_id, image_filename, is_veg, is_spicy)
+        )
+
+        flash("Блюдо успешно добавлено!")
+        return redirect(url_for("admin_manage_categories"))
+
+    return render_template('admin/add_dish.html', categories=categories)
