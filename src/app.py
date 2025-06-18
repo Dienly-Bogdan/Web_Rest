@@ -340,3 +340,33 @@ def cart_update_quantity(dish_id):
     session["cart"] = cart
     session.modified = True
     return '', 204  # пустой успешный ответ
+
+
+# ---------------------- ОФОРМЛЕНИЕ ЗАКАЗА ----------------------
+
+# Статус заказа — страница с деталями заказа для пользователя
+@app.route("/order_status/<int:order_id>")
+def order_status(order_id):
+    conn = get_db()
+    cur = conn.cursor()
+
+    order = cur.execute(
+        "SELECT * FROM orders WHERE id = ? AND user_id = ?",
+        (order_id, session["user_id"])
+    ).fetchone()
+
+    if order is None:
+        flash("Заказ не найден или у вас нет доступа к нему.")
+        return redirect(url_for("index"))
+
+    items = cur.execute(
+        """
+        SELECT oi.qty AS quantity, d.title AS name, d.price
+        FROM order_items oi
+        JOIN dishes d ON oi.dish_id = d.id
+        WHERE oi.order_id = ?
+        """,
+        (order_id,)
+    ).fetchall()
+
+    return render_template("order_status.html", order=order, items=items)
