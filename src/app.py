@@ -1,7 +1,15 @@
-import os
-from flask import (
-    Flask, render_template, request, redirect, url_for, session, flash, send_from_directory, g
-)
-from werkzeug.utils import secure_filename
+import os  # Работа с файловой системой и путями
 
-from database import get_db, close_db, init_db, query_db, execute_db
+# Импорт нужных функций и классов из flask
+from flask import (
+    Flask,               # Основной класс приложения Flask
+    render_template,     # Для рендера html-шаблонов
+    request,             # Для доступа к данным запроса (POST, GET)
+    redirect,            # Для редиректов между страницами
+    url_for,             # Для генерации url по имени функции
+    session,             # Для работы с пользовательской сессией
+    flash,               # Для всплывающих сообщений
+    send_from_directory, # Для отдачи файлов из папки (например, изображений)
+    g                   # Глобальный объект для хранения данных на время запроса
+)
+from werkzeug.utils import secure_filename  # Для защиты имён загружаемых файлов
