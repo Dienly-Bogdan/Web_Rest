@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Статус заказа — Паста и Пицца</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- Шапка -->
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <a href="/" class="flex items-center space-x-2">
+      <img src="{{ url_for('static', filename='uploads/pasta_pizza.png') }}" alt="Логотип Паста и Пицца" class="h-10 w-10 rounded-full" loading="lazy" />
+      <h1 class="text-xl font-bold">Паста и Пицца</h1>
+    </a>
+    <nav>
+      <a href="/menu" class="mx-2 text-blue-600 hover:underline">Меню</a>
+      {% if session.user_id %}
+        <a href="/cart" id="cartLink" class="mx-2 text-blue-600 hover:underline">Корзина</a>
+        <a href="/orders" class="mx-2 text-blue-600 hover:underline">Заказы</a>
+      {% endif %}
+
+      {% if session.user_id %}
+        <span id="userMenuButton" class="mx-2 text-gray-700 cursor-pointer relative select-none">
+          {{ session.user_name }}
+          <div id="userDropdown" class="hidden absolute top-full right-0 bg-white border rounded shadow p-2 z-10">
+            <a href="/logout" class="block text-red-600 hover:underline">Выйти</a>
+          </div>
+        </span>
+      {% else %}
+        <a href="/login" class="mx-2 text-blue-600 hover:underline">Войти</a>
+      {% endif %}
+
+      {% if session.is_admin %}
+        <a href="/admin/dashboard" class="mx-2 text-purple-600 hover:underline">Админ-панель</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <script>
+    const btn = document.getElementById('userMenuButton');
+    const dropdown = document.getElementById('userDropdown');
+
+    if (btn && dropdown) {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        dropdown.classList.toggle('hidden');
+      });
+
+      window.addEventListener('click', () => {
+        if (!dropdown.classList.contains('hidden')) {
+          dropdown.classList.add('hidden');
+        }
+      });
+    }
+  </script>
+
+  <main class="p-4 max-w-3xl mx-auto">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="mb-4">
+          {% for message in messages %}
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-2">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <h2 class="text-2xl font-bold mb-4">Статус заказа №{{ order.id }}</h2>
+    <p class="mb-2">Статус: <span class="font-semibold">{{ order.status }}</span></p>
+    <p class="mb-4">Дата заказа: {{ order.created_at }}</p>
+
+    <h3 class="text-xl font-bold mb-2">Состав заказа:</h3>
+    <table class="min-w-full bg-white shadow rounded mb-6">
+      <thead>
+        <tr>
+          <th class="py-2 px-4 border-b text-left">Блюдо</th>
+          <th class="py-2 px-4 border-b text-left">Количество</th>
+          <th class="py-2 px-4 border-b text-left">Цена за единицу</th>
+          <th class="py-2 px-4 border-b text-left">Сумма</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+          <tr>
+            <td class="py-2 px-4 border-b">{{ item.name }}</td>
+            <td class="py-2 px-4 border-b">{{ item.quantity }}</td>
+            <td class="py-2 px-4 border-b">{{ item.price }} ₽</td>
+            <td class="py-2 px-4 border-b">{{ item.quantity * item.price }} ₽</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <p class="text-lg font-bold">Итого: {{ order.total_price }} ₽</p>
+  </main>
+
+</body>
+</html>
