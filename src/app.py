@@ -531,3 +531,32 @@ def admin_add_dish():
         return redirect(url_for("admin_manage_categories"))
 
     return render_template('admin/add_dish.html', categories=categories)
+
+# Редактирование блюда (админка)
+@app.route('/admin/edit_dish/<int:dish_id>', methods=['GET', 'POST'])
+@admin_required
+def admin_edit_dish(dish_id):
+    dish = get_dish_by_id(dish_id)
+    categories = get_categories()
+    if not dish:
+        return "Нет такого блюда"
+    if request.method == "POST":
+        title = request.form['title']
+        description = request.form['description']
+        price = float(request.form['price'])
+        category_id = int(request.form.get('category_id', 0))
+        if not category_id:
+            flash("Выберите категорию!")
+            return redirect(request.url)
+        is_veg = int(request.form.get('is_veg', 0))
+        is_spicy = int(request.form.get('is_spicy', 0))
+        image = request.files.get('image')
+        image_filename = dish["image"]
+        if image and image.filename:
+            image_filename = secure_filename(image.filename)
+            image.save(os.path.join(app.config["UPLOAD_FOLDER"], image_filename))
+        execute_db("""UPDATE dishes SET title=?, description=?, price=?, category_id=?, image=?, is_veg=?, is_spicy=?
+                     WHERE id=?""",
+                  (title, description, price, category_id, image_filename, is_veg, is_spicy, dish_id))
+        return redirect(url_for('admin_manage_menu'))
+    return render_template('admin/edit_dish.html', dish=dish, categories=categories)
